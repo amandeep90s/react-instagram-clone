@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import FirebaseContext from "../context/firebase";
 import UserContext from "../context/user";
 import * as ROUTES from "../constants/routes";
+import Gravatar from "react-gravatar";
 
 const Header = () => {
     const { firebase } = useContext(FirebaseContext);
@@ -77,9 +78,12 @@ const Header = () => {
 
                                 <div className="flex items-center cursor-pointer">
                                     <Link to={`/p/${user.displayName}`}>
-                                        <img
-                                            src={`/images/avatars/karl.jpg`}
-                                            alt={`${user.displayName} profile`}
+                                        {user.emailAddress}
+                                        <Gravatar
+                                            email={user.email}
+                                            size={100}
+                                            rating="pg"
+                                            default="monsterid"
                                             className="rounded-full h-8 w-8 flex"
                                         />
                                     </Link>
