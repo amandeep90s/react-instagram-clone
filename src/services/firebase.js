@@ -10,6 +10,19 @@ export const doesUsernameExist = async (username) => {
     return result.docs.length > 0;
 };
 
+export const getUserByUsername = async (username) => {
+    const result = await firebase
+        .firestore()
+        .collection("users")
+        .where("username", "==", username)
+        .get();
+
+    return result.docs.map((item) => ({
+        ...item.data(),
+        docId: item.id,
+    }));
+};
+
 export const getUserByUserId = async (userId) => {
     const result = await firebase
         .firestore()
@@ -96,4 +109,18 @@ export const getPhotos = async (userId, following) => {
     );
 
     return photosWithUserDetails;
+};
+
+export const getUserPhotosByUsername = async (username) => {
+    const [user] = await getUserByUsername(username);
+    const result = await firebase
+        .firestore()
+        .collection("photos")
+        .where("userId", "==", user.userId)
+        .get();
+
+    return result.docs.map((item) => ({
+        ...item.data(),
+        docId: item.id,
+    }));
 };
