@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 const Actions = ({ docId, totalLikes, likedPhoto, handleFocus }) => {
     const {
-        user: { uid: userId = "" },
+        user: { uid: userId },
     } = useContext(UserContext);
     const { firebase, FieldValue } = useContext(FirebaseContext);
 

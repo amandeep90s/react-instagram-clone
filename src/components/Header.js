@@ -1,13 +1,16 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import FirebaseContext from "../context/firebase";
 import UserContext from "../context/user";
 import * as ROUTES from "../constants/routes";
 import Gravatar from "react-gravatar";
+import UseUser from "../hooks/UseUser";
 
 const Header = () => {
+    const { user: loggedInUser } = useContext(UserContext);
+    const { user } = UseUser(loggedInUser?.uid);
     const { firebase } = useContext(FirebaseContext);
-    const { user } = useContext(UserContext);
+    const history = useHistory();
 
     return (
         <header className="h-16 bg-white border-b border-gray-primary mb-8">
@@ -28,7 +31,7 @@ const Header = () => {
                         </h1>
                     </div>
                     <div className="text-gray-700 text-center flex align-items items-center">
-                        {user ? (
+                        {loggedInUser ? (
                             <>
                                 <Link
                                     to={ROUTES.DASHBOARD}
@@ -53,10 +56,14 @@ const Header = () => {
                                 <button
                                     type="button"
                                     title="Sign Out"
-                                    onClick={() => firebase.auth().signOut()}
+                                    onClick={() => {
+                                        firebase.auth().signOut();
+                                        history.push(ROUTES.LOGIN);
+                                    }}
                                     onKeyDown={(event) => {
                                         if (event.key === "Enter") {
                                             firebase.auth().signOut();
+                                            history.push(ROUTES.LOGIN);
                                         }
                                     }}
                                 >
@@ -77,10 +84,9 @@ const Header = () => {
                                 </button>
 
                                 <div className="flex items-center cursor-pointer">
-                                    <Link to={`/p/${user.displayName}`}>
-                                        {user.emailAddress}
+                                    <Link to={`/p/${user?.username}`}>
                                         <Gravatar
-                                            email={user.email}
+                                            email={user.emailAddress}
                                             size={100}
                                             rating="pg"
                                             default="monsterid"

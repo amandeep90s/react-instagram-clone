@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Skeleton from "react-loading-skeleton";
 import UseUser from "../../hooks/UseUser";
 import { isUserFollowingProfile, toggleFollow } from "../../services/firebase";
 import Gravatar from "react-gravatar";
+import UserContext from "../../context/user";
 
 const Header = ({
     photosCount,
@@ -15,11 +16,12 @@ const Header = ({
         username: profileUsername,
         emailAddress,
         fullName,
-        followers = [],
-        following = [],
+        followers,
+        following,
     },
 }) => {
-    const { user } = UseUser();
+    const { user: loggedInUser } = useContext(UserContext);
+    const { user } = UseUser(loggedInUser?.uid);
     const [isFollowingProfile, setIsFollowingProfile] = useState(false);
     const activeBtnFollow =
         user?.username && user?.username !== profileUsername;
@@ -33,10 +35,10 @@ const Header = ({
             setIsFollowingProfile(!!isFollowing);
         };
 
-        if (user.username && profileUserId) {
+        if (user?.username && profileUserId) {
             isLoggedInUserFollowingProfile();
         }
-    }, [user.username, profileUserId]);
+    }, [user?.username, profileUserId]);
 
     const handleToggleFollow = async () => {
         setIsFollowingProfile((isFollowingProfile) => !isFollowingProfile);
@@ -58,10 +60,10 @@ const Header = ({
 
     return (
         <div className="grid grid-cols-3 gap-4 justify-between mx-auto max-w-screen-lg">
-            <div className="container flex justify-center">
+            <div className="container flex justify-center items-center">
                 <Gravatar
                     email={emailAddress}
-                    size={250}
+                    size={200}
                     rating="pg"
                     default="monsterid"
                     className="rounded-full h-40 w-40 flex"
