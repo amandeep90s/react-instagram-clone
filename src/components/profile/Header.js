@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Skeleton from "react-loading-skeleton";
 import UseUser from "../../hooks/UseUser";
-import { isUserFollowingProfile } from "../../services/firebase";
+import { isUserFollowingProfile, toggleFollow } from "../../services/firebase";
 import Gravatar from "react-gravatar";
 
 const Header = ({
@@ -38,7 +38,7 @@ const Header = ({
         }
     }, [user.username, profileUserId]);
 
-    const handleToggleFollow = () => {
+    const handleToggleFollow = async () => {
         setIsFollowingProfile((isFollowingProfile) => !isFollowingProfile);
 
         setFollowerCount({
@@ -46,6 +46,14 @@ const Header = ({
                 ? followerCount - 1
                 : followerCount + 1,
         });
+
+        await toggleFollow(
+            isFollowingProfile,
+            user.docId,
+            profileDocId,
+            profileUserId,
+            user.userId
+        );
     };
 
     return (
@@ -93,11 +101,9 @@ const Header = ({
                             </p>
                             <p className="mr-10">
                                 <span className="font-bold">
-                                    {followers.length}
+                                    {followerCount}
                                 </span>{" "}
-                                {followers.length === 1
-                                    ? "follower"
-                                    : "followers"}
+                                {followerCount === 1 ? "follower" : "followers"}
                             </p>
                             <p className="mr-10">
                                 <span className="font-bold">
